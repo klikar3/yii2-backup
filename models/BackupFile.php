@@ -1,6 +1,6 @@
 <?php
 
-namespace spanjeta\modules\backup\models;
+namespace klikar3\modules\backup\models;
 
 use yii\base\Model;
 

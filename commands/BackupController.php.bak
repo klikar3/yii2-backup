@@ -1,8 +1,8 @@
 <?php
 
-namespace klikar3\modules\backup\commands;
+namespace spanjeta\modules\backup\commands;
 
-use klikar3\modules\backup\helpers\MysqlBackup;
+use spanjeta\modules\backup\helpers\MysqlBackup;
 use yii\console\Controller;
 
 class BackupController extends Controller {

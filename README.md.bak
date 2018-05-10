@@ -3,8 +3,6 @@ Yii2 Backup and Restore Database
 Database Backup and Restore functionality
 
 This module is derived from the work of Shiv Charan Panjeta shivcharan.panjeta@gmail.com
-  https://github.com/spanjeta/yii2-backup
-
 i only added a download function and a confirm message in case of backup-deletion
 
 Installation
