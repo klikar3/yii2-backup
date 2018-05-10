@@ -1,6 +1,6 @@
 <?php
 
-namespace klikar3\modules\backup\helpers;
+namespace spanjeta\modules\backup\helpers;
 
 use Yii;
 use yii\db\Exception;

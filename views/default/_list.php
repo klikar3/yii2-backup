@@ -13,11 +13,12 @@ echo GridView::widget ( [
 				array (
 						'header' => 'Delete DB',
 						'class' => 'yii\grid\ActionColumn',
-						'template' => '{restore}{delete}',
+						'template' => '{restore} {delete} {download}',
 						'buttons' => [ 
 								'delete' => function ($url, $model) {
 									return Html::a ( '<span class="glyphicon glyphicon-remove"></span>', $url, [ 
-											'title' => Yii::t ( 'app', 'Delete this backup' ) ,'data-method'=>'post'
+											'title' => Yii::t ( 'app', 'Delete this backup' ) ,'data-method'=>'post',
+                      'data-confirm' => Yii::t ( 'app', 'Really delete this backup?' )
 									] );
 								},
 								
@@ -25,7 +26,17 @@ echo GridView::widget ( [
 									return Html::a ( '<span class="glyphicon glyphicon-save"></span>', $url, [ 
 											'title' => Yii::t ( 'app', 'Restore this backup' ) ,'data-method'=>'post'
 									] );
-								} 
+								},
+				        'download' => function ($url, $model) {
+				            return Html::a(
+				                '<span class="glyphicon glyphicon-arrow-down"></span>',
+				                $url, 
+				                [
+				                    'title' => Yii::t ( 'app', 'Download this backup' ),'data-method'=>'post',
+				                    'data-pjax' => '0',
+				                ]
+				            );
+				        }, 								 
 						],
 						'urlCreator' => function ($action, $model, $key, $index) {
 							

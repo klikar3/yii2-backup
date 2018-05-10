@@ -1,6 +1,6 @@
 <?php
 
-namespace klikar3\modules\backup\models;
+namespace spanjeta\modules\backup\models;
 
 use yii\base\Model;
 
@@ -10,16 +10,19 @@ use yii\base\Model;
  * Yii module to backup, restore databse
  *
  * @version 1.0
- * @author Shiv Charan Panjeta <shiv@toxsl.com> <shivcharan.panjeta@outlook.com>
+ * @author Shiv Charan Panjeta <shiv@toxsl.com> <shivcharan.panjeta@gmail.com>
  */
 /**
  * UploadForm class.
  * UploadForm is the data structure for keeping
  */
-class UploadForm extends Model
+class BackupFile extends Model
 {
-	public $upload_file ;
-
+	public $id ;
+	public $name ;
+	public $size ;
+	public $create_time ;
+	public $modified_time ;
 	/**
 	 * Declares the validation rules.
 	 * The rules state that username and password are required,
@@ -27,11 +30,8 @@ class UploadForm extends Model
 	 */
 	public function rules()
 	{
-		if(!isset($this->scenario))
-			$this->scenario = 'upload';
-
 		return array(
-				array('upload_file', 'required'),
+				array(['id','name','size','create_time','modified_time'], 'required'),
 		);
 	}
 
@@ -41,10 +41,13 @@ class UploadForm extends Model
 	public function attributeLabels()
 	{
 		return array(
-				'upload_file'=>'Upload File',
+				'name'=>'File Name',
+				'size'=>'File Size',
+				'create_time'=>'Create Time',
+				'modified_time'=>'Modified Time',
 		);
 	}
 	public static function label($n = 1) {
-		return Yii::t('app', 'File|Files', $n);
+		return Yii::t('app', 'Backup File|Backup Files', $n);
 	}
 }
