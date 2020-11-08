@@ -1,13 +1,14 @@
 <?php
 
-namespace spanjeta\modules\backup\helpers;
+namespace klikar3\modules\backup\helpers;
 
 use Yii;
 use yii\db\Exception;
+use yii\base\BaseObject;
 
 if (version_compare(PHP_VERSION, '7.1', '<=')) {
 
-    use yii\base\Object;
+//    use yii\base\Object;
     
     class MysqlBackup extends Object {
     	public $tables = [ ];
@@ -221,7 +222,7 @@ if (version_compare(PHP_VERSION, '7.1', '<=')) {
     }
 }
 else {
-use yii\base\BaseObject;
+// use yii\base\BaseObject;
     
     class MysqlBackup extends BaseObject {
     	public $tables = [ ];
