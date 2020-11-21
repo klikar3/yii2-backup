@@ -8,7 +8,7 @@ use yii\base\BaseObject;
 
 if (version_compare(PHP_VERSION, '7.1', '<=')) {
 
-//    use yii\base\Object;
+//   use yii\base\Object;
     
     class MysqlBackup extends Object {
     	public $tables = [ ];
