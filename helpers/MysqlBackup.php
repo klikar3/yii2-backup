@@ -316,7 +316,7 @@ else {
     		unlink ( $this->file_name );
     	}
     	public function getTables($dbName = null) {
-    		$sql = 'SHOW TABLES';
+    		$sql = "SHOW FULL TABLES where Table_Type != 'VIEW'";
     		$cmd = Yii::$app->db->createCommand ( $sql );
     		$tables = $cmd->queryColumn ();
     		return $tables;

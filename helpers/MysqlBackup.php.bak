@@ -219,6 +219,45 @@ if (version_compare(PHP_VERSION, '7.1', '<=')) {
     		}
     		return $sqlZipFile;
     	}
+	protected function getFileList($ext = '*.sql') {
+    		$path = $this->path;
+    		$dataArray = array ();
+    		$list = array ();
+    		$list_files = glob ( $path . $ext );
+    		if ($list_files) {
+    			$list = array_map ( 'basename', $list_files );
+    			sort ( $list );
+    		}
+    		return $list;
+    	}
+    	public function getNewestFiledate() {
+        
+    		$list = self::getFileList();
+    
+    		$list = array_merge ( $list, self::getFileList ( '*.zip' ) );
+    
+    		$dataArray = [ ];
+    		foreach ( $list as $id => $filename ) {
+    			$columns = array ();
+    			$columns ['id'] = $id;
+    			$columns ['name'] = basename ( $filename );
+    			$columns ['create_time'] = date ( 'Y-m-d H:i:s', filectime ( $this->path . $filename ) );
+    			$columns ['modified_time'] = date ( 'Y-m-d H:i:s', filemtime ( $this->path . $filename ) );
+    			if (date ( 'M-d-Y' . ' \a\t ' . ' g:i A', filemtime ( $this->path . $filename ) ) > date ( 'M-d-Y' . ' \a\t ' . ' g:i A', filectime ( $this->path . $filename ) )) {
+    				$columns ['modified_time'] = date ( 'M-d-Y' . ' \a\t ' . ' g:i A', filemtime ( $this->path . $filename ) );
+    			}
+    
+    			$dataArray [] = $columns;
+    		}
+    
+    //    rsort($dataArray->sort('create_time desc');
+        usort($dataArray, function($a, $b) {
+            return $a['create_time'] < $b['create_time'];
+        });
+        
+    		
+    		return $dataArray[0]['create_time'];
+    	}
     }
 }
 else {
@@ -432,6 +471,45 @@ else {
     			}
     		}
     		return $sqlZipFile;
+    	}
+	protected function getFileList($ext = '*.sql') {
+    		$path = $this->path;
+    		$dataArray = array ();
+    		$list = array ();
+    		$list_files = glob ( $path . $ext );
+    		if ($list_files) {
+    			$list = array_map ( 'basename', $list_files );
+    			sort ( $list );
+    		}
+    		return $list;
+    	}
+    	public function getNewestFiledate() {
+        
+    		$list = self::getFileList();
+    
+    		$list = array_merge ( $list, self::getFileList ( '*.zip' ) );
+    
+    		$dataArray = [ ];
+    		foreach ( $list as $id => $filename ) {
+    			$columns = array ();
+    			$columns ['id'] = $id;
+    			$columns ['name'] = basename ( $filename );
+    			$columns ['create_time'] = date ( 'Y-m-d H:i:s', filectime ( $this->path . $filename ) );
+    			$columns ['modified_time'] = date ( 'Y-m-d H:i:s', filemtime ( $this->path . $filename ) );
+    			if (date ( 'M-d-Y' . ' \a\t ' . ' g:i A', filemtime ( $this->path . $filename ) ) > date ( 'M-d-Y' . ' \a\t ' . ' g:i A', filectime ( $this->path . $filename ) )) {
+    				$columns ['modified_time'] = date ( 'M-d-Y' . ' \a\t ' . ' g:i A', filemtime ( $this->path . $filename ) );
+    			}
+    
+    			$dataArray [] = $columns;
+    		}
+    
+    //    rsort($dataArray->sort('create_time desc');
+        usort($dataArray, function($a, $b) {
+            return $a['create_time'] < $b['create_time'];
+        });
+        
+    		
+    		return $dataArray[0]['create_time'];
     	}
     }
 }
