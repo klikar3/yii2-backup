@@ -1,5 +1,6 @@
 <?php
-use yii\helpers\Html;
+use yii\bootstrap4\Html;
+//use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\Url;
 
@@ -16,20 +17,20 @@ echo GridView::widget ( [
 						'template' => '{restore} {delete} {download}',
 						'buttons' => [ 
 								'delete' => function ($url, $model) {
-									return Html::a ( '<span class="glyphicon glyphicon-remove"></span>', $url, [ 
+									return Html::a ( '<span class="fas fa-trash glyphicon glyphicon-remove"></span>', $url, [ 
 											'title' => Yii::t ( 'app', 'Delete this backup' ) ,'data-method'=>'post',
                       'data-confirm' => Yii::t ( 'app', 'Really delete this backup?' )
 									] );
 								},
 								
 								'restore' => function ($url, $model) {
-									return Html::a ( '<span class="glyphicon glyphicon-save"></span>', $url, [ 
+									return Html::a ( '<span class="fas fa-upload glyphicon glyphicon-save"></span>', $url, [ 
 											'title' => Yii::t ( 'app', 'Restore this backup' ) ,'data-method'=>'post'
 									] );
 								},
 				        'download' => function ($url, $model) {
 				            return Html::a(
-				                '<span class="glyphicon glyphicon-arrow-down"></span>',
+				                '<span class="fas fa-download glyphicon glyphicon-arrow-down"></span>',
 				                $url, 
 				                [
 				                    'title' => Yii::t ( 'app', 'Download this backup' ),'data-method'=>'post',
