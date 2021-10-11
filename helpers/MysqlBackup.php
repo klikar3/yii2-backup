@@ -139,6 +139,9 @@ if (version_compare(PHP_VERSION, '7.1', '<=')) {
     			$valueString = join ( "','", $itemValues );
     			$valueString = "('" . $valueString . "'),";
     			$values = "\n" . $valueString;
+                // handle NULL Date/Datetime values
+                $values = str_replace( "'0000-00-00'", "NULL",$values);
+                $values = str_replace( "'0000-00-00 00:00:00'", "NULL",$values);
     			
     			if ($values != "") {
     				$data_string = "INSERT INTO `$tableName` (`$items`) VALUES" . rtrim ( $values, "," ) . ";;;" . PHP_EOL;
@@ -392,6 +395,9 @@ else {
     			$valueString = join ( "','", $itemValues );
     			$valueString = "('" . $valueString . "'),";
     			$values = "\n" . $valueString;
+                // handle NULL Date/Datetime values
+                $values = str_replace( "'0000-00-00'", "NULL",$values);
+                $values = str_replace( "'0000-00-00 00:00:00'", "NULL",$values);
     			
     			if ($values != "") {
     				$data_string = "INSERT INTO `$tableName` (`$items`) VALUES" . rtrim ( $values, "," ) . ";;;" . PHP_EOL;
