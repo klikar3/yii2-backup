@@ -1,6 +1,6 @@
 <?php
 use yii\bootstrap4\Html;
-use yii\helpers\Html;
+//use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\Url;
 
@@ -19,7 +19,8 @@ echo GridView::widget ( [
 								'delete' => function ($url, $model) {
 									return Html::a ( '<span class="fas fa-trash glyphicon glyphicon-remove"></span>', $url, [ 
 											'title' => Yii::t ( 'app', 'Delete this backup' ) ,'data-method'=>'post',
-                      'data-confirm' => Yii::t ( 'app', 'Really delete this backup?' )
+                                            'data-confirm' => Yii::t ( 'app', 'Really delete this backup?' ),
+				                            'data-pjax' => '0',
 									] );
 								},
 								
@@ -53,3 +54,28 @@ echo GridView::widget ( [
 		) 
 ] );
 ?>
+<p>
+Execution Time Limit needs to be set as 0 in config.default.php file. Which looks like $cfg['ExecTimeLimit'] = 300;
+
+Make it to
+
+$cfg['ExecTimeLimit'] = 0;
+
+Location of that file supposed to be at /usr/share/phpmyadmin/libraries
+</p>
+<p>
+importieren mittels:
+<br>
+D:\wamp64\yii2-backup>..\bin\mysql\mysql5.6.17\bin\mysql -u root -p wt-data &lt;D:\WT\Backups\db_backup_2021.10.12_20.14.58.sql
+</p>
+<p>
+
+Wenn die Fehlermeldung kommt:<br>
+ERROR 2006 (HY000) at line 122732: MySQL server has gone away
+--- dann:<br>
+To solve this problem increase max_allowed_packet size in your mysql configuration. Edit configuration file my.ini and add following value under [mysql] section.
+<br>
+  max_allowed_packet=100M
+<br>
+Set the value as per your requirement and restart MySQL service.
+</p>

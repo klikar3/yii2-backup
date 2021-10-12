@@ -114,7 +114,10 @@ class DefaultController extends Controller {
 				unlink ( $sqlFile );
 		} else
 			throw new HttpException ( 404, Yii::t ( 'app', 'File not found' ) );
-		return $this->redirect ( \yii::$app->request->referrer );
+//		return $this->redirect ( \yii::$app->request->referrer );
+		return $this->redirect ( array (
+				'index'
+		) );
 	}
 	protected function getFileList($ext = '*.sql') {
 		$path = $this->path;
