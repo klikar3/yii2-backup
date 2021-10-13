@@ -9,7 +9,7 @@ use yii\base\BaseObject;
 if (version_compare(PHP_VERSION, '7.1', '<=')) {
 
 //   use yii\base\Object;
-    
+
     class MysqlBackup extends Object {
     	public $tables = [ ];
     	public $fp;
@@ -130,18 +130,28 @@ if (version_compare(PHP_VERSION, '7.1', '<=')) {
     		if ($this->fp)
     			$this->writeComment ( 'TABLE DATA ' . $tableName );
     		
-    		foreach ( $dataReader as $data ) {
-    			$itemNames = array_keys ( $data );
+    		foreach ( $dataReader as $data) {
+                $itemNames = array_keys ( $data );
     			$itemNames = array_map ( "addslashes", $itemNames );
     			$items = join ( '`,`', $itemNames );
     			$itemValues = array_values ( $data );
-    			$itemValues = array_map ( "addslashes", $itemValues );
+                if (($tableName=='mitglieder') && ($data['MitgliedsNr']=='100054')) {
+                        Yii::warning($data);
+                        Yii::warning($itemValues);
+                }        
+                // proper handling of NULL values
+                $itemValues = array_map(function($v){
+                    return (is_null($v)) ? "#?#" : $v;
+                },$itemValues);
+     			$itemValues = array_map ( "addslashes", $itemValues );
     			$valueString = join ( "','", $itemValues );
     			$valueString = "('" . $valueString . "'),";
     			$values = "\n" . $valueString;
                 // handle NULL Date/Datetime values
                 $values = str_replace( "'0000-00-00'", "NULL",$values);
                 $values = str_replace( "'0000-00-00 00:00:00'", "NULL",$values);
+                // proper handling of NULL values
+                $values = str_replace( "'#?#'", "NULL",$values);
     			
     			if ($values != "") {
     				$data_string = "INSERT INTO `$tableName` (`$items`) VALUES" . rtrim ( $values, "," ) . ";;;" . PHP_EOL;
@@ -273,6 +283,8 @@ else {
     	public $back_temp_file = 'db_backup_';
     	public $_path;
     	public $enableZip = true;
+        
+        
     	public function execSqlFile($sqlFile) {
     		$message = "ok";
     		
@@ -319,11 +331,46 @@ else {
     		unlink ( $this->file_name );
     	}
     	public function getTables($dbName = null) {
-    		$sql = "SHOW FULL TABLES where Table_Type != 'VIEW'";
+//    		$sql = "SHOW FULL TABLES where Table_Type != 'VIEW'";
+            $sql = "SELECT TABLE_NAME
+FROM information_schema.tables
+WHERE table_schema=DATABASE() and table_type = 'BASE TABLE'
+  AND TABLE_NAME NOT IN (
+  SELECT DISTINCT TABLE_NAME
+  FROM information_schema.key_column_usage WHERE table_schema=DATABASE()
+  AND referenced_table_name IS NOT NULL)
+  
+  union all
+  
+  SELECT DISTINCT TABLE_NAME
+FROM information_schema.referential_constraints
+WHERE CONSTRAINT_SCHEMA=DATABASE()
+  AND referenced_table_name NOT IN
+    (SELECT DISTINCT TABLE_NAME
+     FROM information_schema.table_constraints
+     WHERE constraint_type = 'FOREIGN KEY')
+  AND TABLE_NAME NOT IN
+    (SELECT DISTINCT TABLE_NAME
+     FROM information_schema.referential_constraints
+     WHERE referenced_table_name IN
+         (SELECT DISTINCT TABLE_NAME
+          FROM information_schema.table_constraints
+          WHERE constraint_type = 'FOREIGN KEY'))
+          
+ union all         
+ SELECT DISTINCT TABLE_NAME
+FROM information_schema.referential_constraints
+WHERE CONSTRAINT_SCHEMA=DATABASE()
+  AND referenced_table_name IN
+    (SELECT DISTINCT TABLE_NAME
+     FROM information_schema.table_constraints
+     WHERE constraint_type = 'FOREIGN KEY'); ";
     		$cmd = Yii::$app->db->createCommand ( $sql );
     		$tables = $cmd->queryColumn ();
+//            Yii::warning($tables);
     		return $tables;
     	}
+        
     	public function startBackup($addcheck = true) {
     		$this->file_name = $this->path . $this->back_temp_file . date ( 'Y.m.d_H.i.s' ) . '.sql';
     		$this->fp = fopen ( $this->file_name, 'w+' );
@@ -378,26 +425,37 @@ else {
     			return $create_query;
     		}
     	}
+ 
     	public function getData($tableName) {
     		$sql = 'SELECT * FROM ' . $tableName;
     		$cmd = Yii::$app->db->createCommand ( $sql );
     		$dataReader = $cmd->query ();
-    		
+            
     		if ($this->fp)
     			$this->writeComment ( 'TABLE DATA ' . $tableName );
     		
-    		foreach ( $dataReader as $data ) {
-    			$itemNames = array_keys ( $data );
+    		foreach ( $dataReader as $data) {
+                $itemNames = array_keys ( $data );
     			$itemNames = array_map ( "addslashes", $itemNames );
     			$items = join ( '`,`', $itemNames );
     			$itemValues = array_values ( $data );
-    			$itemValues = array_map ( "addslashes", $itemValues );
+                if (($tableName=='mitglieder') && ($data['MitgliedsNr']=='100054')) {
+                        Yii::warning($data);
+                        Yii::warning($itemValues);
+                }        
+                // proper handling of NULL values
+                $itemValues = array_map(function($v){
+                    return (is_null($v)) ? "#?#" : $v;
+                },$itemValues);
+     			$itemValues = array_map ( "addslashes", $itemValues );
     			$valueString = join ( "','", $itemValues );
     			$valueString = "('" . $valueString . "'),";
     			$values = "\n" . $valueString;
                 // handle NULL Date/Datetime values
                 $values = str_replace( "'0000-00-00'", "NULL",$values);
                 $values = str_replace( "'0000-00-00 00:00:00'", "NULL",$values);
+                // proper handling of NULL values
+                $values = str_replace( "'#?#'", "NULL",$values);
     			
     			if ($values != "") {
     				$data_string = "INSERT INTO `$tableName` (`$items`) VALUES" . rtrim ( $values, "," ) . ";;;" . PHP_EOL;

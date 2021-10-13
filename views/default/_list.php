@@ -55,9 +55,11 @@ echo GridView::widget ( [
 ] );
 ?>
 <p>
-importieren mittels:
+importieren (in windows - cmd) mittels codepage ändern zu utf8, importieren, codepage wieder zu 850:
 <br>
+chcp 65001<br>
 D:\wamp64\yii2-backup>..\bin\mysql\mysql5.6.17\bin\mysql -u root -p wt-data &lt;D:\WT\Backups\db_backup_2021.10.12_20.14.58.sql
+chcp 850<br>
 </p>
 <p>
 
