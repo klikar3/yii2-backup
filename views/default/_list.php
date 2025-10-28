@@ -81,3 +81,7 @@ $cfg['ExecTimeLimit'] = 0;
 <br>
 Location of that file supposed to be at /usr/share/phpmyadmin/libraries
 </p>
+<p>
+Wenn der backupfile gross ist kann es unter linux folgendermassen eingespielt werden:<br>
+zcat /path/to/file.sql.gz | mysql -u 'root' -p your_database
+</p>
