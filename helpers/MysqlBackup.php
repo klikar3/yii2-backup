@@ -552,7 +552,9 @@ WHERE CONSTRAINT_SCHEMA=DATABASE()
     		$list = self::getFileList();
     
     		$list = array_merge ( $list, self::getFileList ( '*.zip' ) );
-    
+				
+			if isempty($list) return date ( 'Y-m-d H:i:s', mktime(0, 0, 0, date("m"),   date("d"),   date("Y")-5));
+			
     		$dataArray = [ ];
     		foreach ( $list as $id => $filename ) {
     			$columns = array ();
