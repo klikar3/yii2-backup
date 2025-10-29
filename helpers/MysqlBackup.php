@@ -12,6 +12,7 @@ if (version_compare(PHP_VERSION, '7.1', '<=')) {
 
     class MysqlBackup extends Object {
     	public $tables = [ ];
+    	public $views = [ ];
     	public $fp;
     	public $file_name;
     	public $back_temp_file = 'db_backup_';
@@ -68,6 +69,17 @@ if (version_compare(PHP_VERSION, '7.1', '<=')) {
     		$tables = $cmd->queryColumn ();
     		return $tables;
     	}
+    	public function getViews($dbName = null) {
+            Yii::warning('getViews');
+            $sql = "SELECT TABLE_NAME
+FROM information_schema.views
+WHERE table_schema=DATABASE(); ";
+    		$cmd = Yii::$app->db->createCommand ( $sql );
+    		$tables = $cmd->queryColumn ();
+            Yii::warning($tables);
+    		return $tables;
+    	}
+        
     	public function startBackup($addcheck = true) {
     		$this->file_name = $this->path . $this->back_temp_file . date ( 'Y.m.d_H.i.s' ) . '.sql';
     		$this->fp = fopen ( $this->file_name, 'w+' );
@@ -122,6 +134,25 @@ if (version_compare(PHP_VERSION, '7.1', '<=')) {
     			return $create_query;
     		}
     	}
+    	public function getViewColumns($tableName) {
+    		$sql = 'SHOW CREATE VIEW ' . $tableName;
+    		$cmd = Yii::$app->db->createCommand ( $sql );
+    		$table = $cmd->queryOne ();
+    		
+    		$create_query = $table ['Create View'] . ';';
+    		
+ //   		$create_query = preg_replace ( '/^CREATE TABLE/', 'CREATE TABLE IF NOT EXISTS', $create_query );
+ //   		$create_query = preg_replace ( '/AUTO_INCREMENT\s*=\s*([0-9])+/', '', $create_query );
+    		if ($this->fp) {
+    			$this->writeComment ( 'VIEW `' . addslashes ( $tableName ) . '`' );
+    			$final = 'DROP VIEW IF EXISTS `' . addslashes ( $tableName ) . '`;' . PHP_EOL . $create_query . PHP_EOL . PHP_EOL;
+    			fwrite ( $this->fp, $final );
+    		} else {
+    			$this->tables [$tableName] ['create'] = $create_query;
+    			return $create_query;
+    		}
+    	}
+ 
     	public function getData($tableName) {
     		$sql = 'SELECT * FROM ' . $tableName;
     		$cmd = Yii::$app->db->createCommand ( $sql );
@@ -274,10 +305,12 @@ if (version_compare(PHP_VERSION, '7.1', '<=')) {
     }
 }
 else {
+//    ---------------------------------------------------------------------------------------------------------------------  
 // use yii\base\BaseObject;
     
     class MysqlBackup extends BaseObject {
     	public $tables = [ ];
+    	public $views = [ ];
     	public $fp;
     	public $file_name;
     	public $back_temp_file = 'db_backup_';
@@ -371,6 +404,19 @@ WHERE CONSTRAINT_SCHEMA=DATABASE()
     		return $tables;
     	}
         
+    	public function getViews($dbName = null) {
+            $this->writeComment ( 'getViews' );
+//             Yii::warning('getViews');
+            $sql = "SELECT TABLE_NAME
+FROM information_schema.views
+WHERE table_schema=DATABASE(); ";
+    		$cmd = Yii::$app->db->createCommand ( $sql );
+    		$tables = $cmd->queryColumn ();
+            Yii::warning($tables);
+    		return $tables;
+    	}
+        
+        
     	public function startBackup($addcheck = true) {
     		$this->file_name = $this->path . $this->back_temp_file . date ( 'Y.m.d_H.i.s' ) . '.sql';
     		$this->fp = fopen ( $this->file_name, 'w+' );
@@ -425,6 +471,25 @@ WHERE CONSTRAINT_SCHEMA=DATABASE()
     			return $create_query;
     		}
     	}
+
+    	public function getViewColumns($tableName) {
+    		$sql = 'SHOW CREATE VIEW ' . $tableName;
+    		$cmd = Yii::$app->db->createCommand ( $sql );
+    		$table = $cmd->queryOne ();
+    		
+    		$create_query = $table ['Create View'] . ';';
+    		
+ //   		$create_query = preg_replace ( '/^CREATE TABLE/', 'CREATE TABLE IF NOT EXISTS', $create_query );
+ //   		$create_query = preg_replace ( '/AUTO_INCREMENT\s*=\s*([0-9])+/', '', $create_query );
+    		if ($this->fp) {
+    			$this->writeComment ( 'VIEW `' . addslashes ( $tableName ) . '`' );
+    			$final = 'DROP VIEW IF EXISTS `' . addslashes ( $tableName ) . '`;' . PHP_EOL . $create_query . PHP_EOL . PHP_EOL;
+    			fwrite ( $this->fp, $final );
+    		} else {
+    			$this->tables [$tableName] ['create'] = $create_query;
+    			return $create_query;
+    		}
+    	}
  
     	public function getData($tableName) {
     		$sql = 'SELECT * FROM ' . $tableName;
@@ -440,8 +505,8 @@ WHERE CONSTRAINT_SCHEMA=DATABASE()
     			$items = join ( '`,`', $itemNames );
     			$itemValues = array_values ( $data );
                 if (($tableName=='mitglieder') && ($data['MitgliedsNr']=='100054')) {
-                        Yii::warning($data);
-                        Yii::warning($itemValues);
+//                        Yii::warning($data);
+//                        Yii::warning($itemValues);
                 }        
                 // proper handling of NULL values
                 $itemValues = array_map(function($v){
@@ -547,13 +612,13 @@ WHERE CONSTRAINT_SCHEMA=DATABASE()
     		}
     		return $list;
     	}
-    	public function getNewestFiledate() {
+    public function getNewestFiledate() {
         
     		$list = self::getFileList();
     
     		$list = array_merge ( $list, self::getFileList ( '*.zip' ) );
 				
-			if isempty($list) return date ( 'Y-m-d H:i:s', mktime(0, 0, 0, date("m"),   date("d"),   date("Y")-5));
+			if (!$list) return date ( 'Y-m-d H:i:s', mktime(0, 0, 0, date("m"),   date("d"),   date("Y")-5));
 			
     		$dataArray = [ ];
     		foreach ( $list as $id => $filename ) {

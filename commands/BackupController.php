@@ -49,6 +49,11 @@ class BackupController extends Controller {
 			$sql->getData ( $tableName );
 		}
 		
+        $views = $sql->getViews ();
+ 		foreach ( $views as $viewName ) {
+			$sql->getViewColumns ( $viewName );
+		}
+       
 		$sqlFile = $sql->endBackup ();
 		$this->log ( __FUNCTION__ . ":Finished : " . $sqlFile );
 		return $sqlFile;

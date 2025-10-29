@@ -17,6 +17,7 @@ set_time_limit ( 900 );
 class DefaultController extends Controller {
 	public $menu = [ ];
 	public $tables = [ ];
+    public $views = [ ];
 	public $fp;
 	public $file_name;
 	public $enableZip = true;
@@ -72,6 +73,11 @@ class DefaultController extends Controller {
 			foreach ( $tables as $tableName ) {
 				$sql->getData ( $tableName );
 			}
+		}
+        
+        $views = $sql->getViews ();
+ 		foreach ( $views as $viewName ) {
+			$sql->getViewColumns ( $viewName );
 		}
 
 		$sql->endBackup ();
