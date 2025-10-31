@@ -51,10 +51,17 @@ class DefaultController extends Controller {
 				]
 		];
 	}
-	protected function getPath() {
-		$sql = new MysqlBackup ();
-		return $sql->path;
-	}
+	//protected function getPath() {
+		//$sql = new MysqlBackup ();
+		//return $sql->path;
+	//}
+    protected function getPath() {
+        $this->_path = Yii::$app->basePath . '/db/';
+        if (! file_exists ( $this->_path )) {
+            @mkdir ( $this->_path, 0775, true );
+        }
+        return $this->_path;
+    }
 	public function actionCreate($data = 1) {
         Yii::warning(Yii::$app->db->dsn);
         Yii::warning(Yii::$app->db->username);
