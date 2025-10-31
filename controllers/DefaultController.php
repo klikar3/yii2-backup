@@ -61,7 +61,6 @@ class DefaultController extends Controller {
         Yii::warning(Yii::$app->db->password);
 
         $path = $this->path;
-        $filepath = $path
         $this->file_name = $this->path . $this->back_temp_file . date ( 'Y.m.d_H.i.s' ) . '.sql';
  
         try {

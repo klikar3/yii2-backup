@@ -13,7 +13,6 @@
     ],
     "require": {
         "yiisoft/yii2": "*",
-        "yidas/yii2-composer-bower-skip": "*",
         "ifsnop/mysqldump-php": "*"
     },
     "autoload": {
