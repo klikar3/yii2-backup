@@ -6,19 +6,24 @@
     "license": "Apache-2.0",
     "authors": [
         {
-            "name": "Shiv Charan Panjeta",
-            "email": "shivcharan.panjeta@gmail.com",
             "name": "Karl Klingler",
             "email": "klikar3@web.de"
 
         }
     ],
     "require": {
-        "yiisoft/yii2": "*"
+        "yiisoft/yii2": "*",
+        "yidas/yii2-composer-bower-skip": "*",
+        "ifsnop/mysqldump-php": "*"
     },
     "autoload": {
         "psr-4": {
             "klikar3\\modules\\backup\\": ""
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true
         }
     }
 }

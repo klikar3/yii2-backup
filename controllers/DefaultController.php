@@ -5,12 +5,15 @@ namespace klikar3\modules\backup\controllers;
 use yii\web\Controller;
 use yii\helpers\VarDumper;
 use klikar3\models\User;
-use klikar3\modules\backup\helpers\MysqlBackup;
+//use klikar3\modules\backup\helpers\MysqlBackup;
 use klikar3\modules\backup\models\UploadForm;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\filters\AccessControl;
 use yii\web\HttpException;
+
+use Ifsnop\Mysqldump as IMysqldump;
+
 
 set_time_limit ( 900 );
 
@@ -19,6 +22,7 @@ class DefaultController extends Controller {
 	public $tables = [ ];
     public $views = [ ];
 	public $fp;
+    public $back_temp_file = 'db_backup_';
 	public $file_name;
 	public $enableZip = true;
 	public function behaviors() {
@@ -52,39 +56,54 @@ class DefaultController extends Controller {
 		return $sql->path;
 	}
 	public function actionCreate($data = 1) {
-		$sql = new MysqlBackup ();
+        Yii::warning(Yii::$app->db->dsn);
+        Yii::warning(Yii::$app->db->username);
+        Yii::warning(Yii::$app->db->password);
 
-		$tables = $sql->getTables ();
-		
-		if (! $sql->startBackup ()) {
+        $path = $this->path;
+        $filepath = $path
+        $this->file_name = $this->path . $this->back_temp_file . date ( 'Y.m.d_H.i.s' ) . '.sql';
+ 
+        try {
+            $dump = new IMysqldump\Mysqldump(Yii::$app->db->dsn, Yii::$app->db->username, Yii::$app->db->password);
+            $dump->start($this->file_name);
+        } catch (\Exception $e) {
+            echo 'mysqldump-php error: ' . $e->getMessage();
+        }
 
-			// render error
-			Yii::$app->user->setFlash ( 'success', "Error" );
-			return $this->render ( 'index' );
-		}
+		//$sql = new MysqlBackup ();
+
+		//$tables = $sql->getTables ();
 		
-		foreach ( $tables as $tableName ) {
-			$sql->getColumns ( $tableName );
-		}
-		/* echo "<prE>";
-		print_r($sql->getColumns ( $tableName ));
-		die(); */
-		if ($data) {
-			foreach ( $tables as $tableName ) {
-				$sql->getData ( $tableName );
-			}
-		}
+		//if (! $sql->startBackup ()) {
+
+			//// render error
+			//Yii::$app->user->setFlash ( 'success', "Error" );
+			//return $this->render ( 'index' );
+		//}
+		
+		//foreach ( $tables as $tableName ) {
+			//$sql->getColumns ( $tableName );
+		//}
+		///* echo "<prE>";
+		//print_r($sql->getColumns ( $tableName ));
+		//die(); */
+		//if ($data) {
+			//foreach ( $tables as $tableName ) {
+				//$sql->getData ( $tableName );
+			//}
+		//}
         
-        $views = $sql->getViews ();
- 		foreach ( $views as $viewName ) {
-			$sql->getViewColumns ( $viewName );
-		}
+        //$views = $sql->getViews ();
+ 		//foreach ( $views as $viewName ) {
+			//$sql->getViewColumns ( $viewName );
+		//}
 
-		$sql->endBackup ();
+		//$sql->endBackup ();
 
-		$this->redirect ( array (
-				'index'
-		) );
+		//$this->redirect ( array (
+				//'index'
+		//) );
 	}
 	public function actionClean($redirect = true) {
 		$ignore = array (

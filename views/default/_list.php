@@ -55,7 +55,7 @@ echo GridView::widget ( [
 ] );
 ?>
 <p>
-importieren (in windows - cmd) mittels codepage ändern zu utf8, importieren, codepage wieder zu 850:
+importieren (in windows - cmd) mittels codepage aendern zu utf8, importieren, codepage wieder zu 850:
 <br>
 chcp 65001<br>
 D:\wamp64\yii2-backup>..\bin\mysql\mysql5.6.17\bin\mysql -u root -p wt-data &lt;D:\WT\Backups\db_backup_2021.10.12_20.14.58.sql
@@ -80,8 +80,4 @@ Make it to
 $cfg['ExecTimeLimit'] = 0;
 <br>
 Location of that file supposed to be at /usr/share/phpmyadmin/libraries
-</p>
-<p>
-Wenn der backupfile gross ist kann es unter linux folgendermassen eingespielt werden:<br>
-zcat /path/to/file.sql.gz | mysql -u 'root' -p your_database
 </p>
