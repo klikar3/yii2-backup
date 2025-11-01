@@ -12,8 +12,8 @@
         }
     ],
     "require": {
-        "yiisoft/yii2": ">=2.0.38",
         "yidas/yii2-bower-asset": "*",
+        "yiisoft/yii2": ">=2.0.38",
         "ifsnop/mysqldump-php": "*"
     },
     "autoload": {

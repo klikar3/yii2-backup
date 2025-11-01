@@ -18,44 +18,44 @@ use Ifsnop\Mysqldump as IMysqldump;
 set_time_limit ( 900 );
 
 class DefaultController extends Controller {
-	public $menu = [ ];
-	public $tables = [ ];
+    public $menu = [ ];
+    public $tables = [ ];
     public $views = [ ];
-	public $fp;
+    public $fp;
     public $_path;
     public $back_temp_file = 'db_backup_';
-	public $file_name;
-	public $enableZip = true;
-	public function behaviors() {
-		return [
-				'access' => [
-						'class' => AccessControl::className (),
-						'only' => [
-								'index',
-								'create',
-								'delete',
-								'download'
-						],
-						'rules' => [
-								[
-										'actions' => [
-												'index',
-												'create',
-												'delete',
-												'download',
-												'restore'
-										],
-										'allow' => true,
-										'roles' => ['@'],
-								]
-						]
-				]
-		];
-	}
-	//protected function getPath() {
-		//$sql = new MysqlBackup ();
-		//return $sql->path;
-	//}
+    public $file_name;
+    public $enableZip = true;
+    public function behaviors() {
+        return [
+                'access' => [
+                        'class' => AccessControl::className (),
+                        'only' => [
+                                'index',
+                                'create',
+                                'delete',
+                                'download'
+                        ],
+                        'rules' => [
+                                [
+                                        'actions' => [
+                                                'index',
+                                                'create',
+                                                'delete',
+                                                'download',
+                                                'restore'
+                                        ],
+                                        'allow' => true,
+                                        'roles' => ['@'],
+                                ]
+                        ]
+                ]
+        ];
+    }
+    //protected function getPath() {
+        //$sql = new MysqlBackup ();
+        //return $sql->path;
+    //}
     protected function getPath() {
         $this->_path = Yii::$app->basePath . '/db/';
         if (! file_exists ( $this->_path )) {
@@ -63,7 +63,7 @@ class DefaultController extends Controller {
         }
         return $this->_path;
     }
-	public function actionCreate($data = 1) {
+    public function actionCreate($data = 1) {
         Yii::warning(Yii::$app->db->dsn);
         Yii::warning(Yii::$app->db->username);
         Yii::warning(Yii::$app->db->password);
@@ -71,294 +71,336 @@ class DefaultController extends Controller {
         $path = $this->path;
         $this->file_name = $this->path . $this->back_temp_file . date ( 'Y.m.d_H.i.s' ) . '.sql';
  
+        $dumpSettings = array(
+            'include-tables' => array(),
+            'exclude-tables' => array(),
+            'include-views' => array(),
+            'compress' => IMysqldump\Mysqldump::NONE,
+            'init_commands' => array(),
+            'no-data' => array(),
+            'if-not-exists' => false,
+            'reset-auto-increment' => false,
+            'add-drop-database' => false,
+            'add-drop-table' => false,
+            'add-drop-trigger' => true,
+            'add-locks' => true,
+            'complete-insert' => false,
+            'databases' => false,
+            'default-character-set' => IMysqldump\Mysqldump::UTF8,
+            'disable-keys' => true,
+            'extended-insert' => true,
+            'events' => false,
+            'hex-blob' => true, /* faster than escaped content */
+            'insert-ignore' => false,
+            'net_buffer_length' => IMysqldump\Mysqldump::MAXLINESIZE,
+            'no-autocommit' => true,
+            'no-create-db' => false,
+            'no-create-info' => false,
+            'lock-tables' => true,
+            'routines' => false,
+            'single-transaction' => true,
+            'skip-triggers' => false,
+            'skip-tz-utc' => false,
+            'skip-comments' => false,
+            'skip-dump-date' => false,
+            'skip-definer' => true,
+            'where' => '',
+            /* deprecated */
+            'disable-foreign-keys-check' => true
+        );
+
+        if ($dumpSettings["compress"] == IMysqldump\Mysqldump::GZIP)
+                $this->file_name = $this->file_name . '.gz';
+
+ 
         try {
-            $dump = new IMysqldump\Mysqldump(Yii::$app->db->dsn, Yii::$app->db->username, Yii::$app->db->password);
+            $dump = new IMysqldump\Mysqldump(Yii::$app->db->dsn, Yii::$app->db->username, Yii::$app->db->password, $dumpSettings);
             $dump->start($this->file_name);
         } catch (\Exception $e) {
             echo 'mysqldump-php error: ' . $e->getMessage();
         }
 
-		//$sql = new MysqlBackup ();
+        //$sql = new MysqlBackup ();
 
-		//$tables = $sql->getTables ();
-		
-		//if (! $sql->startBackup ()) {
+        //$tables = $sql->getTables ();
+        
+        //if (! $sql->startBackup ()) {
 
-			//// render error
-			//Yii::$app->user->setFlash ( 'success', "Error" );
-			//return $this->render ( 'index' );
-		//}
-		
-		//foreach ( $tables as $tableName ) {
-			//$sql->getColumns ( $tableName );
-		//}
-		///* echo "<prE>";
-		//print_r($sql->getColumns ( $tableName ));
-		//die(); */
-		//if ($data) {
-			//foreach ( $tables as $tableName ) {
-				//$sql->getData ( $tableName );
-			//}
-		//}
+            //// render error
+            //Yii::$app->user->setFlash ( 'success', "Error" );
+            //return $this->render ( 'index' );
+        //}
+        
+        //foreach ( $tables as $tableName ) {
+            //$sql->getColumns ( $tableName );
+        //}
+        ///* echo "<prE>";
+        //print_r($sql->getColumns ( $tableName ));
+        //die(); */
+        //if ($data) {
+            //foreach ( $tables as $tableName ) {
+                //$sql->getData ( $tableName );
+            //}
+        //}
         
         //$views = $sql->getViews ();
- 		//foreach ( $views as $viewName ) {
-			//$sql->getViewColumns ( $viewName );
-		//}
+        //foreach ( $views as $viewName ) {
+            //$sql->getViewColumns ( $viewName );
+        //}
 
-		//$sql->endBackup ();
+        //$sql->endBackup ();
 
-		//$this->redirect ( array (
-				//'index'
-		//) );
-	}
-	public function actionClean($redirect = true) {
-		$ignore = array (
-				'tbl_user',
-				'tbl_user_role',
-				'tbl_event'
-		);
+        //$this->redirect ( array (
+                //'index'
+        //) );
+    }
+    public function actionClean($redirect = true) {
+        $ignore = array (
+                'tbl_user',
+                'tbl_user_role',
+                'tbl_event'
+        );
 
-		// logout so there is no problme later .
-		Yii::$app->user->logout ();
+        // logout so there is no problme later .
+        Yii::$app->user->logout ();
 
-		$sql = new MysqlBackup ();
+        $sql = new MysqlBackup ();
 
-		$sql->clean ( $ignore );
+        $sql->clean ( $ignore );
 
-		$message .= ' are deleted.';
-		Yii::$app->session->setFlash ( 'success', $message );
-		return $this->redirect ( array (
-				'index'
-		) );
-	}
-	public function actionDelete($file) {
-		$list = $this->getFileList ( $file );
-		$file = $list [0];
+        $message .= ' are deleted.';
+        Yii::$app->session->setFlash ( 'success', $message );
+        return $this->redirect ( array (
+                'index'
+        ) );
+    }
+    public function actionDelete($file) {
+        $list = $this->getFileList ( $file );
+        $file = $list [0];
 
-		$this->updateMenuItems ();
-		if (isset ( $file )) {
+        $this->updateMenuItems ();
+        if (isset ( $file )) {
 
-			$sqlFile = $this->path . basename ( $file );
+            $sqlFile = $this->path . basename ( $file );
 
-			if (file_exists ( $sqlFile ))
+            if (file_exists ( $sqlFile ))
 
-				unlink ( $sqlFile );
-		} else
-			throw new HttpException ( 404, Yii::t ( 'app', 'File not found' ) );
-//		return $this->redirect ( \yii::$app->request->referrer );
-		return $this->redirect ( array (
-				'index'
-		) );
-	}
-	protected function getFileList($ext = '*.sql') {
-		$path = $this->path;
-		$dataArray = array ();
-		$list = array ();
-		$list_files = glob ( $path . $ext );
-		if ($list_files) {
-			$list = array_map ( 'basename', $list_files );
-			sort ( $list );
-		}
-		return $list;
-	}
-	public function actionIndex() {
-		$this->layout = null;
-		$this->updateMenuItems ();
+                unlink ( $sqlFile );
+        } else
+            throw new HttpException ( 404, Yii::t ( 'app', 'File not found' ) );
+//      return $this->redirect ( \yii::$app->request->referrer );
+        return $this->redirect ( array (
+                'index'
+        ) );
+    }
+    protected function getFileList($ext = '*.sql') {
+        $path = $this->path;
+        $dataArray = array ();
+        $list = array ();
+        $list_files = glob ( $path . $ext );
+        if ($list_files) {
+            $list = array_map ( 'basename', $list_files );
+            sort ( $list );
+        }
+        return $list;
+    }
+    public function actionIndex() {
+        $this->layout = null;
+        $this->updateMenuItems ();
 
-		$list = $this->getFileList ();
+        $list = $this->getFileList ();
 
-		$list = array_merge ( $list, $this->getFileList ( '*.zip' ) );
+        $list = array_merge ( $list, $this->getFileList ( '*.zip' ) );
 
-		$dataArray = [ ];
-		foreach ( $list as $id => $filename ) {
-			$columns = array ();
-			$columns ['id'] = $id;
-			$columns ['name'] = basename ( $filename );
-			$columns ['size'] = filesize ( $this->path . $filename );
+        $dataArray = [ ];
+        foreach ( $list as $id => $filename ) {
+            $columns = array ();
+            $columns ['id'] = $id;
+            $columns ['name'] = basename ( $filename );
+            $columns ['size'] = filesize ( $this->path . $filename );
 
-			$columns ['create_time'] = date ( 'Y-m-d H:i:s', filectime ( $this->path . $filename ) );
-			$columns ['modified_time'] = date ( 'Y-m-d H:i:s', filemtime ( $this->path . $filename ) );
-			if (date ( 'M-d-Y' . ' \a\t ' . ' g:i A', filemtime ( $this->path . $filename ) ) > date ( 'M-d-Y' . ' \a\t ' . ' g:i A', filectime ( $this->path . $filename ) )) {
-				$columns ['modified_time'] = date ( 'M-d-Y' . ' \a\t ' . ' g:i A', filemtime ( $this->path . $filename ) );
-			}
+            $columns ['create_time'] = date ( 'Y-m-d H:i:s', filectime ( $this->path . $filename ) );
+            $columns ['modified_time'] = date ( 'Y-m-d H:i:s', filemtime ( $this->path . $filename ) );
+            if (date ( 'M-d-Y' . ' \a\t ' . ' g:i A', filemtime ( $this->path . $filename ) ) > date ( 'M-d-Y' . ' \a\t ' . ' g:i A', filectime ( $this->path . $filename ) )) {
+                $columns ['modified_time'] = date ( 'M-d-Y' . ' \a\t ' . ' g:i A', filemtime ( $this->path . $filename ) );
+            }
 
-			$dataArray [] = $columns;
-		}
+            $dataArray [] = $columns;
+        }
 
-		$dataProvider = new ArrayDataProvider ( [
-				'allModels' => array_reverse ( $dataArray ),
-				'sort' => [
-						'attributes' => [
-								'modified_time' => SORT_ASC
-						]
-				]
-		] );
+        $dataProvider = new ArrayDataProvider ( [
+                'allModels' => array_reverse ( $dataArray ),
+                'sort' => [
+                        'attributes' => [
+                                'modified_time' => SORT_ASC
+                        ]
+                ]
+        ] );
 
-		return $this->render ( 'index', array (
-				'dataProvider' => $dataProvider
-		) );
-	}
-	public function actionRestore($file = null) {
-		ini_set ( 'max_execution_time', 0 );
-		//ini_set('memory_limit', '512M');
-		
-		$message = 'OK';
-		$this->layout = null;
-		$this->updateMenuItems ();
+        return $this->render ( 'index', array (
+                'dataProvider' => $dataProvider
+        ) );
+    }
+    public function actionRestore($file = null) {
+        ini_set ( 'max_execution_time', 0 );
+        //ini_set('memory_limit', '512M');
+        
+        $message = 'OK';
+        $this->layout = null;
+        $this->updateMenuItems ();
 
-		$list = $this->getFileList ();
-		
-		$list = array_merge ( $list, $this->getFileList ( '*.zip' ) );
-		$list = array_merge ( $list, $this->getFileList ( '*.gz' ) );
-		
-		foreach ( $list as $id => $filename ) {
+        $list = $this->getFileList ();
+        
+        $list = array_merge ( $list, $this->getFileList ( '*.zip' ) );
+        $list = array_merge ( $list, $this->getFileList ( '*.gz' ) );
+        
+        foreach ( $list as $id => $filename ) {
 
-			$columns = array ();
-			$columns ['id'] = $id;
-			$columns ['name'] = basename ( $filename );
-			$columns ['size'] = filesize ( $this->path . $filename );
+            $columns = array ();
+            $columns ['id'] = $id;
+            $columns ['name'] = basename ( $filename );
+            $columns ['size'] = filesize ( $this->path . $filename );
 
-			$columns ['create_time'] = date ( 'Y-m-d H:i:s', filectime ( $this->path . $filename ) );
-			$columns ['modified_time'] = date ( 'Y-m-d H:i:s', filemtime ( $this->path . $filename ) );
+            $columns ['create_time'] = date ( 'Y-m-d H:i:s', filectime ( $this->path . $filename ) );
+            $columns ['modified_time'] = date ( 'Y-m-d H:i:s', filemtime ( $this->path . $filename ) );
 
-			if (date ( 'M-d-Y' . ' \a\t ' . ' g:i A', filemtime ( $this->path . $filename ) ) > date ( 'M-d-Y' . ' \a\t ' . ' g:i A', filectime ( $this->path . $filename ) )) {
-				$columns ['modified_time'] = date ( 'M-d-Y' . ' \a\t ' . ' g:i A', filemtime ( $this->path . $filename ) );
-			}
+            if (date ( 'M-d-Y' . ' \a\t ' . ' g:i A', filemtime ( $this->path . $filename ) ) > date ( 'M-d-Y' . ' \a\t ' . ' g:i A', filectime ( $this->path . $filename ) )) {
+                $columns ['modified_time'] = date ( 'M-d-Y' . ' \a\t ' . ' g:i A', filemtime ( $this->path . $filename ) );
+            }
 
-			$dataArray [] = $columns;
-		}
+            $dataArray [] = $columns;
+        }
 
-		$dataProvider = new ArrayDataProvider ( [
-				'allModels' => array_reverse ( $dataArray ),
-				'sort' => [
-						'attributes' => [
-								'modified_time' => SORT_ASC
-						]
-				]
-		] );
+        $dataProvider = new ArrayDataProvider ( [
+                'allModels' => array_reverse ( $dataArray ),
+                'sort' => [
+                        'attributes' => [
+                                'modified_time' => SORT_ASC
+                        ]
+                ]
+        ] );
 
-		if (isset ( $file )) {
-			$sql = new MysqlBackup ();
-			$sqlZipFile = $this->path . basename ( $file );
-			$sqlFile = $sql->unzip ( $sqlZipFile );
-			
-			$message = $sql->execSqlFile ( $sqlFile );
+        if (isset ( $file )) {
+            $sql = new MysqlBackup ();
+            $sqlZipFile = $this->path . basename ( $file );
+            $sqlFile = $sql->unzip ( $sqlZipFile );
+            
+            $message = $sql->execSqlFile ( $sqlFile );
 
-			if ($message == 'OK')
-				\yii::$app->session->setFlash ( 'success', 'Restored Successfully.' );
-			else
-				\yii::$app->session->setFlash ( 'success', $message );
-		} else {
-			\yii::$app->session->setFlash ( 'success', 'Select a file.' );
-			$message = 'NOK';
-		}
+            if ($message == 'OK')
+                \yii::$app->session->setFlash ( 'success', 'Restored Successfully.' );
+            else
+                \yii::$app->session->setFlash ( 'success', $message );
+        } else {
+            \yii::$app->session->setFlash ( 'success', 'Select a file.' );
+            $message = 'NOK';
+        }
 
-		return $this->render ( 'restore', array (
-				'error' => $message,
-				'dataProvider' => $dataProvider
-		) );
-	}
-	public function actionUpload() {
-		// $this->layout='main';
-		$model = new UploadForm ();
-		if (isset ( $_POST ['UploadForm'] )) {
-			$model->attributes = $_POST ['UploadForm'];
-			$model->upload_file = \yii\web\UploadedFile::getInstance ( $model, 'upload_file' );
-			if ($model->upload_file->saveAs ( $this->path . $model->upload_file )) {
-				// redirect to success page
-				return $this->redirect ( array (
-						'index'
-				) );
-			}
-		}
+        return $this->render ( 'restore', array (
+                'error' => $message,
+                'dataProvider' => $dataProvider
+        ) );
+    }
+    public function actionUpload() {
+        // $this->layout='main';
+        $model = new UploadForm ();
+        if (isset ( $_POST ['UploadForm'] )) {
+            $model->attributes = $_POST ['UploadForm'];
+            $model->upload_file = \yii\web\UploadedFile::getInstance ( $model, 'upload_file' );
+            if ($model->upload_file->saveAs ( $this->path . $model->upload_file )) {
+                // redirect to success page
+                return $this->redirect ( array (
+                        'index'
+                ) );
+            }
+        }
 
-		return $this->render ( 'upload', array (
-				'model' => $model
-		) );
-	}
-	public function actionDownload($file) {
-		$list = $this->getFileList ( $file );
-		$file = $list [0];
+        return $this->render ( 'upload', array (
+                'model' => $model
+        ) );
+    }
+    public function actionDownload($file) {
+        $list = $this->getFileList ( $file );
+        $file = $list [0];
 
-		$this->updateMenuItems ();
-		if (isset ( $file )) {
+        $this->updateMenuItems ();
+        if (isset ( $file )) {
 
-			$sqlFile = $this->path . basename ( $file );
-			$filename = basename ( $file );
-			if (file_exists ( $sqlFile ))
+            $sqlFile = $this->path . basename ( $file );
+            $filename = basename ( $file );
+            if (file_exists ( $sqlFile ))
 
-				return Yii::$app->response->SendFile($sqlFile,$filename); 
-		} else
-			throw new HttpException ( 404, Yii::t ( 'app', 'File not found' ) );
-		return $this->redirect ( \yii::$app->request->referrer );
-	}
-	protected function updateMenuItems($model = null) {
-		// create static model if model is null
-		if ($model == null)
-			$model = new UploadForm ();
+                return Yii::$app->response->SendFile($sqlFile,$filename); 
+        } else
+            throw new HttpException ( 404, Yii::t ( 'app', 'File not found' ) );
+        return $this->redirect ( \yii::$app->request->referrer );
+    }
+    protected function updateMenuItems($model = null) {
+        // create static model if model is null
+        if ($model == null)
+            $model = new UploadForm ();
 
-		switch ($this->action->id) {
-			case 'restore' :
-				{
-					$this->menu [] = array (
-							'label' => Yii::t ( 'app', 'View Site' ),
-							'url' => Yii::$app->HomeUrl
-					);
-				}
-			case 'create' :
-				{
-					$this->menu [] = array (
-							'label' => Yii::t ( 'app', 'List Backup' ),
-							'url' => array (
-									'index'
-							)
-					);
-				}
-				break;
-			case 'upload' :
-				{
-					$this->menu [] = array (
-							'label' => Yii::t ( 'app', 'Create Backup' ),
-							'url' => array (
-									'create'
-							)
-					);
-				}
-				break;
-			default :
-				{
-					$this->menu [] = array (
-							'label' => Yii::t ( 'app', 'List Backup' ),
-							'url' => array (
-									'index'
-							)
-					);
-					$this->menu [] = array (
-							'label' => Yii::t ( 'app', 'Create Backup' ),
-							'url' => array (
-									'create'
-							)
-					);
-					$this->menu [] = array (
-							'label' => Yii::t ( 'app', 'Upload Backup' ),
-							'url' => array (
-									'upload'
-							)
-					);
-					// $this->menu[] = array('label'=>Yii::t('app', 'Restore Backup') , 'url'=>array('restore'));
-					$this->menu [] = array (
-							'label' => Yii::t ( 'app', 'Clean Database' ),
-							'url' => array (
-									'clean'
-							)
-					);
-					$this->menu [] = array (
-							'label' => Yii::t ( 'app', 'View Site' ),
-							'url' => Yii::$app->HomeUrl
-					);
-				}
-				break;
-		}
-	}
+        switch ($this->action->id) {
+            case 'restore' :
+                {
+                    $this->menu [] = array (
+                            'label' => Yii::t ( 'app', 'View Site' ),
+                            'url' => Yii::$app->HomeUrl
+                    );
+                }
+            case 'create' :
+                {
+                    $this->menu [] = array (
+                            'label' => Yii::t ( 'app', 'List Backup' ),
+                            'url' => array (
+                                    'index'
+                            )
+                    );
+                }
+                break;
+            case 'upload' :
+                {
+                    $this->menu [] = array (
+                            'label' => Yii::t ( 'app', 'Create Backup' ),
+                            'url' => array (
+                                    'create'
+                            )
+                    );
+                }
+                break;
+            default :
+                {
+                    $this->menu [] = array (
+                            'label' => Yii::t ( 'app', 'List Backup' ),
+                            'url' => array (
+                                    'index'
+                            )
+                    );
+                    $this->menu [] = array (
+                            'label' => Yii::t ( 'app', 'Create Backup' ),
+                            'url' => array (
+                                    'create'
+                            )
+                    );
+                    $this->menu [] = array (
+                            'label' => Yii::t ( 'app', 'Upload Backup' ),
+                            'url' => array (
+                                    'upload'
+                            )
+                    );
+                    // $this->menu[] = array('label'=>Yii::t('app', 'Restore Backup') , 'url'=>array('restore'));
+                    $this->menu [] = array (
+                            'label' => Yii::t ( 'app', 'Clean Database' ),
+                            'url' => array (
+                                    'clean'
+                            )
+                    );
+                    $this->menu [] = array (
+                            'label' => Yii::t ( 'app', 'View Site' ),
+                            'url' => Yii::$app->HomeUrl
+                    );
+                }
+                break;
+        }
+    }
 }
