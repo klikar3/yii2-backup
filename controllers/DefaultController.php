@@ -22,6 +22,7 @@ class DefaultController extends Controller {
 	public $tables = [ ];
     public $views = [ ];
 	public $fp;
+    public $_path;
     public $back_temp_file = 'db_backup_';
 	public $file_name;
 	public $enableZip = true;
@@ -209,6 +210,7 @@ class DefaultController extends Controller {
 		$list = $this->getFileList ();
 		
 		$list = array_merge ( $list, $this->getFileList ( '*.zip' ) );
+		$list = array_merge ( $list, $this->getFileList ( '*.gz' ) );
 		
 		foreach ( $list as $id => $filename ) {
 
