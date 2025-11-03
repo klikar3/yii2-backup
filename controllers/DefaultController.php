@@ -63,10 +63,25 @@ class DefaultController extends Controller {
         }
         return $this->_path;
     }
+    
+    public function unzip($sqlZipFile) {
+        if (file_exists ( $sqlZipFile )) {
+            $zip = new \ZipArchive ();
+            $result = $zip->open ( $sqlZipFile );
+            if ($result === true) {
+                $zip->extractTo ( dirname ( $sqlZipFile ) );
+                $zip->close ();
+                $sqlZipFile = str_replace ( ".zip", "", $sqlZipFile );
+            }
+        }
+        return $sqlZipFile;
+    }
+    
+    public function actionCreateschema() {
+        $this->actionCreate($data = 0);
+    }    
+
     public function actionCreate($data = 1) {
-        Yii::warning(Yii::$app->db->dsn);
-        Yii::warning(Yii::$app->db->username);
-        Yii::warning(Yii::$app->db->password);
 
         $path = $this->path;
         $this->file_name = $this->path . $this->back_temp_file . date ( 'Y.m.d_H.i.s' ) . '.sql';
@@ -77,7 +92,7 @@ class DefaultController extends Controller {
             'include-views' => array(),
             'compress' => IMysqldump\Mysqldump::NONE,
             'init_commands' => array(),
-            'no-data' => array(),
+            'no-data' =>  ($data == 1 ) ? false : true,
             'if-not-exists' => false,
             'reset-auto-increment' => false,
             'add-drop-database' => false,
@@ -150,9 +165,9 @@ class DefaultController extends Controller {
 
         //$sql->endBackup ();
 
-        //$this->redirect ( array (
-                //'index'
-        //) );
+        $this->redirect ( array (
+                'index'
+        ) );
     }
     public function actionClean($redirect = true) {
         $ignore = array (
@@ -211,6 +226,7 @@ class DefaultController extends Controller {
         $list = $this->getFileList ();
 
         $list = array_merge ( $list, $this->getFileList ( '*.zip' ) );
+        $list = array_merge ( $list, $this->getFileList ( '*.gz' ) );
 
         $dataArray = [ ];
         foreach ( $list as $id => $filename ) {
@@ -232,7 +248,9 @@ class DefaultController extends Controller {
                 'allModels' => array_reverse ( $dataArray ),
                 'sort' => [
                         'attributes' => [
-                                'modified_time' => SORT_ASC
+                                'defaultOrder' => ['sort_time' => SORT_DESC],
+                                'create_time' => ['default' => SORT_DESC,],
+                                'name',
                         ]
                 ]
         ] );
@@ -281,7 +299,9 @@ class DefaultController extends Controller {
         ] );
 
         if (isset ( $file )) {
-            $sql = new MysqlBackup ();
+            //$sql = new MysqlBackup ();
+            //$sqlZipFile = $this->path . basename ( $file );
+            //$sqlFile = $sql->unzip ( $sqlZipFile );
             $sqlZipFile = $this->path . basename ( $file );
             $sqlFile = $sql->unzip ( $sqlZipFile );
             
