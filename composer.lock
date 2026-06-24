@@ -237,29 +237,29 @@
         },
         {
             "name": "yiisoft/yii2",
-            "version": "2.0.53",
+            "version": "2.0.55",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/yii2-framework.git",
-                "reference": "6c622fb8243181d7912b62ad80821cc0e1c745db"
+                "reference": "b900eecdb225041a4c4e0f5e0e5336f606a23bdb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/6c622fb8243181d7912b62ad80821cc0e1c745db",
-                "reference": "6c622fb8243181d7912b62ad80821cc0e1c745db",
+                "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/b900eecdb225041a4c4e0f5e0e5336f606a23bdb",
+                "reference": "b900eecdb225041a4c4e0f5e0e5336f606a23bdb",
                 "shasum": ""
             },
             "require": {
                 "bower-asset/inputmask": "^5.0.8 ",
                 "bower-asset/jquery": "3.7.*@stable | 3.6.*@stable | 3.5.*@stable | 3.4.*@stable | 3.3.*@stable | 3.2.*@stable | 3.1.*@stable | 2.2.*@stable | 2.1.*@stable | 1.11.*@stable | 1.12.*@stable",
-                "bower-asset/punycode": "^1.4",
+                "bower-asset/punycode": "^2.2",
                 "bower-asset/yii2-pjax": "~2.0.1",
                 "cebe/markdown": "~1.0.0 | ~1.1.0 | ~1.2.0",
                 "ext-ctype": "*",
                 "ext-mbstring": "*",
                 "ezyang/htmlpurifier": "^4.17",
                 "lib-pcre": "*",
-                "php": ">=7.3.0",
+                "php": ">=7.4.0",
                 "yiisoft/yii2-composer": "~2.0.4"
             },
             "bin": [
@@ -354,7 +354,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-06-27T07:42:53+00:00"
+            "time": "2026-05-09T14:50:57+00:00"
         },
         {
             "name": "yiisoft/yii2-composer",
@@ -441,5 +441,5 @@
     "prefer-lowest": false,
     "platform": {},
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
